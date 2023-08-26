@@ -1,4 +1,5 @@
 import {defineStore} from "pinia";
+import { useApiFetch } from "~/composables/useApiFetch";
 
 type User = {
     id: number;
@@ -27,6 +28,10 @@ export const useAuthStore = defineStore('auth', () => {
         return login;
     }
 
+    const isLoggedIn = () => {
+        return user.value != null ? true : false
+    }
 
-    return {user, login}
+
+    return {user, login, isLoggedIn}
 })

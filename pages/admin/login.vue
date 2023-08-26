@@ -23,29 +23,40 @@
                 </div>
                 <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Đăng nhập</button>
             </form>
+            <button @click="logout">Logout</button>
 
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import {useApiFetch} from "~/composables/useApiFetch";
 import {useAuthStore} from "~/stores/useAuthStore";
 
 definePageMeta({
     layout: false,
 });
-const email = ref<string>();
-const password = ref<string>();
-const form = ref({
-    email: "duong@gmail.com",
-    password: "12344321"
-})
+
+const email = ref<string>("");
+const password = ref<string>("");
 
 const auth = useAuthStore();
 const handleLogin = async () => {
-    const {data} = await auth.login(form.value)
+    const {data} = await auth.login({
+        email: email.value,
+        password: password.value
+    })
     console.log(data.value)
+}
+
+const logout = async () => {
+    await useFetch('http://localhost:80/api/auth/logout',{
+        method:"POST",
+        credentials: "include",
+        headers: {
+            Accept: "appication/json"
+        }
+    });
+
 }
 </script>
 
