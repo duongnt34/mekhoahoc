@@ -4,10 +4,18 @@ const useApiFetch = <T>(path: string, options: UseFetchOptions<T> = {}) => {
   const config = useRuntimeConfig();
   const API_URL = config.public.API_URL; 
   
-  let headers : any = {};
-  headers["Accept"] = "application/json";
+  let headers : any = {
+    "Accept" : "application/json",
+  };
   if(token.value){
     headers['X-XSRF-TOKEN'] = token.value as string
+  }
+
+  if(process.server) {
+    headers = {
+      ...headers,
+      ...useRequestHeaders(['referer', 'cookie'])
+    }
   }
 
   return useFetch(`${API_URL}${path}`, {
