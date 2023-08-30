@@ -39,17 +39,20 @@ definePageMeta({
 const email = ref<string>("");
 const password = ref<string>("");
 
+const loginData = computed(() => {
+    return {
+        email: email.value,
+        password: password.value,
+    };
+});
+
 const auth = useAuthStore();
 const handleLogin = async () => {
-    const {data} = await auth.login({
-        email: email.value,
-        password: password.value
-    })
-    console.log(data.value)
+    await auth.login(loginData.value);    
 }
 
 const logout = async () => {
-    await useFetch('http://localhost:80/api/auth/logout',{
+    await useFetch('http://localhost:8000/api/auth/logout',{
         method:"POST",
         credentials: "include",
         headers: {
