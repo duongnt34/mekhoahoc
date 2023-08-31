@@ -1,55 +1,63 @@
-import {defineStore} from "pinia";
+import { defineStore } from "pinia";
+import { ref } from "vue";
 import { useApiFetch } from "~/composables/useApiFetch";
 
 type User = {
-    id: number;
-    name: string;
-    email: string;
-}
+  id: number;
+  name: string;
+  email: string;
+};
 
 type Credentials = {
-    email: string;
-    password: string;
-}
+  email: string;
+  password: string;
+};
 
 type RegisterInfo = {
-    name: string;
-    email: string;
-    password: string;
-    password_confirmation: string;
-}
-export const useAuthStore = defineStore('auth', () => {
-    const user = ref<User | null >(null);
-    const isLoggedIn = computed(() => !!user.value)
+  name: string;
+  email: string;
+  password: string;
+  password_confirmation: string;
+};
 
-    const login = async (credentials: Credentials) => {
-        await useApiFetch('/sanctum/csrf-cookie')
+export const useAuthStore = defineStore("auth", () => {
+  const user = ref<User | null>(null);
+  const isLoggedIn = computed(() => !!user.value);
+  const fetchUser = async () => {
+    const { data, error } = await useApiFetch("/api/user");
+    user.value = data.value as User;
+  };
+  const login = async (credentials: Credentials) => {
+    await useApiFetch("/sanctum/csrf-cookie");
 
-        const login = await useApiFetch('/login', {
-            method: "POST",
-            body: credentials,
-        });
+    const login = await useApiFetch("/login", {
+      method: "POST",
+      body: credentials,
+    });
 
-        await fetchUser();
+    await fetchUser();
 
-        return login;
-    }
+    return login;
+  };
 
-    const fetchUser = async () => {
-        const {data, error} = await useApiFetch('/api/user');        
-        user.value = data.value as User
-    }
+  const register = async (info: RegisterInfo) => {
+    await useApiFetch("/sanctum/csrf-cookie");
+    const register = await useApiFetch("/register", {
+      method: "POST",
+      body: info,
+    });
 
-    const register = async (info: RegisterInfo) => {
-        await useApiFetch('/sanctum/csrf-cookie')
+    await fetchUser();
+    return register;
+  };
 
-        const register = await useApiFetch('/register', {
-            method: "POST",
-            body: info
-        })
+  const logout = async () => {
+    await useApiFetch("/sanctum/csrf-cookie");
+    const logout = await useApiFetch("/logout", {
+      method: "POST",
+    });
+    return logout;
+  };
 
-        return register;
-    }
-
-    return {user, login, isLoggedIn, fetchUser, register}
-})
+  return { user, login, isLoggedIn, fetchUser, register, logout };
+});
