@@ -81,6 +81,9 @@
 
 <script setup lang="ts">
 import { useAuthStore } from "~/stores/useAuthStore";
+import { useNuxtApp } from "#app";
+const { $toast } = useNuxtApp();
+
 definePageMeta({
   layout: false,
   middleware: ["logged-in"],
@@ -101,6 +104,7 @@ const handleLogin = async () => {
   if (auth.isLoggedIn) return navigateTo("/admin/dashboard");
   const login = await auth.login(loginData.value);
   if (!login.error.value) {
+    $toast.success("Đăng nhập thành công");
     setTimeout(() => {
       navigateTo("/admin/dashboard");
     }, 1000);

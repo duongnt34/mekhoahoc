@@ -9,6 +9,7 @@ export default <Partial<Config>>{
     "./plugins/**/*.{js,ts}",
     "./nuxt.config.{js,ts}",
     "./node_modules/flowbite/**/*.{js,ts}",
+    "node_modules/tailvue/dist/tailvue.es.js",
   ],
   theme: {
     extend: {

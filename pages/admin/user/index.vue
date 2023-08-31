@@ -1,5 +1,5 @@
 <template>
-  <div>sadsa</div>
+  <div>User Page</div>
 </template>
 
 <script setup>
