@@ -61,6 +61,18 @@
             >
           </div>
         </div>
+
+        <!-- Error Alert -->
+        <div class="mb-6">
+          <div
+            v-if="registerError"
+            class="mb-4 rounded-lg bg-red-50 p-4 text-sm text-red-800 dark:bg-gray-800 dark:text-red-400"
+            role="alert"
+          >
+            <span class="font-medium">{{ registerError }}</span>
+          </div>
+        </div>
+
         <div class="flex items-center justify-between">
           <button
             type="submit"
@@ -83,6 +95,7 @@
 import { useAuthStore } from "~/stores/useAuthStore";
 import { useNuxtApp } from "#app";
 const { $toast } = useNuxtApp();
+const registerError = ref<string>("");
 
 definePageMeta({
   layout: false,
@@ -101,13 +114,18 @@ const loginData = computed(() => {
 
 const auth = useAuthStore();
 const handleLogin = async () => {
+  registerError.value = "";
   if (auth.isLoggedIn) return navigateTo("/admin/dashboard");
   const login = await auth.login(loginData.value);
   if (!login.error.value) {
     $toast.success("Đăng nhập thành công");
-    setTimeout(() => {
+    return setTimeout(() => {
       navigateTo("/admin/dashboard");
     }, 1000);
+  }
+
+  if (login.error.value) {
+    registerError.value = login.error.value.data.message;
   }
 };
 </script>

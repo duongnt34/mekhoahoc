@@ -83,6 +83,8 @@
             {{ formErrors.confirmPassword }}
           </div>
         </div>
+
+        <!-- Error Alert -->
         <div class="mb-6">
           <div
             v-if="registerError"

@@ -215,7 +215,7 @@ const navigation = [
     icon: "fe:app-menu",
   },
   {
-    name: "admin-user",
+    name: "admin-users",
     title: "Tài khoản",
     icon: "fe:users",
   },
