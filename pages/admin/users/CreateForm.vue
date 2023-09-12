@@ -57,7 +57,6 @@
 </template>
 
 <script setup>
-import { initFlowbite } from "flowbite";
 import { useYupSchemas } from "~/composables/useYupSchemas";
 import { useForm } from "vee-validate";
 
@@ -89,7 +88,6 @@ const handleCreateSubmit = () => {
 };
 
 onMounted(() => {
-    initFlowbite();
 });
 
 </script>

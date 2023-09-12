@@ -195,7 +195,6 @@
 
 <script setup lang="ts">
 import { onMounted } from "vue";
-import { initFlowbite } from "flowbite";
 import { useAuthStore } from "~/stores/useAuthStore";
 const route = useRoute();
 
@@ -222,7 +221,6 @@ const navigation = [
 ];
 
 onMounted(() => {
-  initFlowbite();
 });
 </script>
 
