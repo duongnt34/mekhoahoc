@@ -156,7 +156,6 @@ const email = defineInputBinds("email");
 const password = defineInputBinds("password");
 
 const handleCreateSubmit = () => {
-  console.log(formErrors.value);
   const response = useApiFetch("/api/users", {
     method: "POST",
     body: {
