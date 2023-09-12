@@ -5,7 +5,7 @@
       :key="item.key"
       :message="item.message"
       :intent="item.intent"
-      :duration="item.duration?"
+      :duration="item.duration ? item.duration : 2000"
       @remove="remove(index)"
     />
   </div>
