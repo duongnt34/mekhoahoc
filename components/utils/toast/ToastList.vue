@@ -1,5 +1,14 @@
 <template>
-  <div class="toast toast-end toast-top z-50">
+  <TransitionGroup
+    tag="div"
+    enter-from-class="translate-x-full opacity-0"
+    enter-to-class="translate-x-0 opacity-1"
+    enter-active-class="transition duration-500 ease-in-out"
+    leave-from-class="translate-x-0 opacity-1"
+    leave-to-class="translate-x-full opacity-0"
+    leave-active-class="transition duration-500 ease-in-out"
+    class="toast toast-end toast-top z-50"
+  >
     <ToastItem
       v-for="(item, index) in items"
       :key="item.key"
@@ -8,7 +17,7 @@
       :duration="item.duration ? item.duration : 2000"
       @remove="remove(index)"
     />
-  </div>
+  </TransitionGroup>
 </template>
 
 <script setup lang="ts">

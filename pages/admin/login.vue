@@ -115,9 +115,7 @@ const handleLogin = async () => {
   const login = await auth.login(loginData.value);
   if (!login.error.value) {
     $toast.success("Đăng nhập thành công");
-    return setTimeout(() => {
-      navigateTo("/admin/dashboard");
-    }, 1000);
+    navigateTo("/admin/dashboard");
   }
 
   if (login.error.value) {

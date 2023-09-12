@@ -116,11 +116,7 @@
     aria-label="Sidebar"
   >
     <ul class="menu h-full space-y-2 overflow-y-auto bg-base-200">
-      <li
-        v-for="(item, index) in navigation"
-        :key="index"
-        class="rounded-lg bg-base-300"
-      >
+      <li v-for="(item, index) in navigation" :key="index">
         <NuxtLink
           :to="{ name: item.name }"
           :class="{ active: $route.name === item.name }"
@@ -147,20 +143,20 @@
       </li>
 
       <li v-if="!auth.isLoggedIn">
-        <a
-          href="/admin/login"
-          class="group flex items-center rounded-lg p-2 text-gray-900 hover:bg-gray-200 dark:text-white dark:hover:bg-gray-700"
-        >
-          <Icon size="24" name="fe:login"></Icon>
+        <NuxtLink to="/admin/login" class="">
+          <Icon
+            size="24"
+            name="heroicons:arrow-left-on-rectangle-20-solid"
+          ></Icon>
           <span class="ml-3 flex-1 whitespace-nowrap">Đăng nhập</span>
-        </a>
+        </NuxtLink>
       </li>
-      <li v-if="auth.isLoggedIn" @click="logout" class="rounded-lg bg-base-300">
-        <a
-          href="#"
-          class="group flex items-center rounded-lg p-2 text-gray-900 hover:bg-gray-200 dark:text-white dark:hover:bg-gray-700"
-        >
-          <Icon size="24" name="fe:logout"></Icon>
+      <li v-if="auth.isLoggedIn" @click="logout">
+        <a href="#" class="">
+          <Icon
+            size="24"
+            name="heroicons:arrow-right-on-rectangle-20-solid"
+          ></Icon>
           <span class="ml-3 flex-1 whitespace-nowrap">Đăng xuất</span>
         </a>
       </li>
@@ -173,15 +169,18 @@
 </template>
 
 <script setup lang="ts">
+import { useToastStore } from "~/stores/useToastStore";
 import { onMounted } from "vue";
 import { useAuthStore } from "~/stores/useAuthStore";
 const route = useRoute();
+const toast = useToastStore();
 
 const auth = useAuthStore();
 const logout = async () => {
   const logout = await auth.logout();
   if (!logout.error.value) {
     auth.user = null;
+    toast.success("Đăng xuất thành công");
     navigateTo("/admin/login");
   }
 };
@@ -190,12 +189,12 @@ const navigation = [
   {
     name: "admin-dashboard",
     title: "Dashboard",
-    icon: "fe:app-menu",
+    icon: "heroicons:home-20-solid",
   },
   {
     name: "admin-users",
     title: "Tài khoản",
-    icon: "fe:users",
+    icon: "heroicons:user-circle-20-solid",
   },
 ];
 

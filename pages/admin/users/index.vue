@@ -170,6 +170,7 @@
       <CreateUserModal
         :isOpen="isCreateModalOpen"
         @toggle-create-modal="toggleCreateModal"
+        @user-created="userCreated"
       />
     </div>
   </div>
@@ -184,13 +185,19 @@ definePageMeta({
 });
 
 const isCreateModalOpen = ref(false);
+const users = ref(null);
+
+const { data, error } = await useApiFetch("/api/users");
+users.value = data.value.data;
 
 const toggleCreateModal = () => {
   isCreateModalOpen.value = !isCreateModalOpen.value;
 };
 
-const { data, error } = await useApiFetch("/api/users");
-const users = data.value.data;
+const userCreated = (dataUsers) => {
+  isCreateModalOpen.value = !isCreateModalOpen.value;
+  users.value = dataUsers.data;
+};
 </script>
 
 <style scoped></style>

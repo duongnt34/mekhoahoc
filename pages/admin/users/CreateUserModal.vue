@@ -132,7 +132,7 @@ import { useYupSchemas } from "~/composables/useYupSchemas";
 import { useForm } from "vee-validate";
 
 const props = defineProps(["isOpen"]);
-const emit = defineEmits(["toggleCreateModal"]);
+const emit = defineEmits(["toggleCreateModal", "userCreated"]);
 
 const isCreateModalOpen = computed(() => {
   return props.isOpen;
@@ -155,8 +155,8 @@ const name = defineInputBinds("name");
 const email = defineInputBinds("email");
 const password = defineInputBinds("password");
 
-const handleCreateSubmit = () => {
-  const response = useApiFetch("/api/users", {
+const handleCreateSubmit = async () => {
+  const { data } = await useApiFetch("/api/users", {
     method: "POST",
     body: {
       name: values.name,
@@ -165,7 +165,9 @@ const handleCreateSubmit = () => {
     },
   });
 
-  emit("toggleCreateModal");
+  const users = data.value;
+
+  emit("userCreated", users);
 };
 </script>
 
