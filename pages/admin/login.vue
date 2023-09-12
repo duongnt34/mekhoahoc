@@ -88,13 +88,17 @@
         </div>
       </form>
     </div>
+
+    <div class="toast toast-end toast-top">
+      <div class="alert alert-success">
+        <span>Đăng nhập thành công</span>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { useAuthStore } from "~/stores/useAuthStore";
-import { useNuxtApp } from "#app";
-const { $toast } = useNuxtApp();
 const registerError = ref<string>("");
 
 definePageMeta({
@@ -118,7 +122,6 @@ const handleLogin = async () => {
   if (auth.isLoggedIn) return navigateTo("/admin/dashboard");
   const login = await auth.login(loginData.value);
   if (!login.error.value) {
-    $toast.success("Đăng nhập thành công");
     return setTimeout(() => {
       navigateTo("/admin/dashboard");
     }, 1000);

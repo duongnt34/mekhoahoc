@@ -43,5 +43,5 @@ export default <Partial<Config>>{
       },
     },
   },
-  plugins: [],
+  plugins: [require("daisyui")],
 };

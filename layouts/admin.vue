@@ -112,80 +112,59 @@
   </nav>
 
   <aside
-    id="sidebar-multi-level-sidebar"
     class="fixed left-0 top-14 z-40 h-screen w-64 -translate-x-full transition-transform sm:translate-x-0"
     aria-label="Sidebar"
   >
-    <div class="h-full overflow-y-auto bg-gray-100 px-3 py-4 dark:bg-gray-800">
-      <ul class="space-y-2 font-medium">
-        <li v-for="item in navigation">
-          <NuxtLink
-            :to="{ name: item.name }"
-            class="group flex items-center rounded-lg p-2 text-gray-900 hover:bg-gray-200 dark:text-white dark:hover:bg-gray-700"
-            :class="{ 'bg-gray-300': $route.name === item.name }"
-          >
-            <Icon size="24" :name="item.icon"></Icon>
-            <span class="ml-3">{{ item.title }}</span>
-          </NuxtLink>
-        </li>
-        <li>
-          <button
-            type="button"
-            class="group flex w-full items-center rounded-lg p-2 text-base text-gray-900 transition duration-75 hover:bg-gray-200 dark:text-white dark:hover:bg-gray-700"
-            aria-controls="dropdown-example"
-            data-collapse-toggle="dropdown-example"
-          >
-            <Icon size="24" name="fe:cart"></Icon>
-            <span class="ml-3 flex-1 whitespace-nowrap text-left"
-              >E-commerce</span
-            >
-            <Icon size="24" name="fe:arrow-down"></Icon>
-          </button>
-          <ul id="dropdown-example" class="hidden space-y-2 py-2">
+    <ul class="menu h-full space-y-2 overflow-y-auto bg-base-200">
+      <li
+        v-for="(item, index) in navigation"
+        :key="index"
+        class="rounded-lg bg-base-300"
+      >
+        <NuxtLink
+          :to="{ name: item.name }"
+          :class="{ active: $route.name === item.name }"
+          ><Icon size="24" :name="item.icon"></Icon>{{ item.title }}</NuxtLink
+        >
+      </li>
+      <li>
+        <details>
+          <summary>Parent</summary>
+          <ul>
+            <li><a>level 2 item 1</a></li>
+            <li><a>level 2 item 2</a></li>
             <li>
-              <a
-                href="#"
-                class="group flex w-full items-center rounded-lg p-2 pl-11 text-gray-900 transition duration-75 hover:bg-gray-200 dark:text-white dark:hover:bg-gray-700"
-                >Products</a
-              >
-            </li>
-            <li>
-              <a
-                href="#"
-                class="group flex w-full items-center rounded-lg p-2 pl-11 text-gray-900 transition duration-75 hover:bg-gray-200 dark:text-white dark:hover:bg-gray-700"
-                >Billing</a
-              >
-            </li>
-            <li>
-              <a
-                href="#"
-                class="group flex w-full items-center rounded-lg p-2 pl-11 text-gray-900 transition duration-75 hover:bg-gray-200 dark:text-white dark:hover:bg-gray-700"
-                >Invoice</a
-              >
+              <details>
+                <summary>Parent</summary>
+                <ul>
+                  <li><a>level 3 item 1</a></li>
+                  <li><a>level 3 item 2</a></li>
+                </ul>
+              </details>
             </li>
           </ul>
-        </li>
+        </details>
+      </li>
 
-        <li v-if="!auth.isLoggedIn">
-          <NuxtLink
-            href="/admin/login"
-            class="group flex items-center rounded-lg p-2 text-gray-900 hover:bg-gray-200 dark:text-white dark:hover:bg-gray-700"
-          >
-            <Icon size="24" name="fe:login"></Icon>
-            <span class="ml-3 flex-1 whitespace-nowrap">Đăng nhập</span>
-          </NuxtLink>
-        </li>
-        <li v-if="auth.isLoggedIn" @click="logout">
-          <a
-            href="#"
-            class="group flex items-center rounded-lg p-2 text-gray-900 hover:bg-gray-200 dark:text-white dark:hover:bg-gray-700"
-          >
-            <Icon size="24" name="fe:logout"></Icon>
-            <span class="ml-3 flex-1 whitespace-nowrap">Đăng xuất</span>
-          </a>
-        </li>
-      </ul>
-    </div>
+      <li v-if="!auth.isLoggedIn">
+        <a
+          href="/admin/login"
+          class="group flex items-center rounded-lg p-2 text-gray-900 hover:bg-gray-200 dark:text-white dark:hover:bg-gray-700"
+        >
+          <Icon size="24" name="fe:login"></Icon>
+          <span class="ml-3 flex-1 whitespace-nowrap">Đăng nhập</span>
+        </a>
+      </li>
+      <li v-if="auth.isLoggedIn" @click="logout" class="rounded-lg bg-base-300">
+        <a
+          href="#"
+          class="group flex items-center rounded-lg p-2 text-gray-900 hover:bg-gray-200 dark:text-white dark:hover:bg-gray-700"
+        >
+          <Icon size="24" name="fe:logout"></Icon>
+          <span class="ml-3 flex-1 whitespace-nowrap">Đăng xuất</span>
+        </a>
+      </li>
+    </ul>
   </aside>
 
   <div class="mt-14 p-4 sm:ml-64">
@@ -220,8 +199,7 @@ const navigation = [
   },
 ];
 
-onMounted(() => {
-});
+onMounted(() => {});
 </script>
 
 <style scoped></style>
