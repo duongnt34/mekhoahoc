@@ -1,6 +1,5 @@
 import * as yup from "yup";
 export const useYupSchemas = () => {
-
   // REGISTER SCHEMA
   const register = yup.object({
     name: yup.string().required("Vui lòng điền họ tên của bạn"),
@@ -27,7 +26,6 @@ export const useYupSchemas = () => {
       .oneOf([yup.ref("password")], "Mật khẩu không trùng khớp"),
   });
 
-
   const adminCreateUser = yup.object({
     name: yup.string().required("Vui lòng điền họ tên"),
     email: yup
@@ -47,6 +45,7 @@ export const useYupSchemas = () => {
         /(?=.*[@#$%^&-+=()])/,
         "Mật khẩu phải có ít nhất 1 ký tự đặc biệt",
       ),
+    avatar: yup.string(),
   });
-  return {register, adminCreateUser};
-}
+  return { register, adminCreateUser };
+};

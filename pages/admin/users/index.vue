@@ -91,77 +91,55 @@
           />
         </div>
       </div>
-      <table class="w-full text-left text-sm text-gray-500 dark:text-gray-400">
-        <thead
-          class="bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400"
-        >
+
+      <table class="table">
+        <!-- head -->
+        <thead>
           <tr>
-            <th scope="col" class="p-4">
-              <div class="flex items-center">
-                <input
-                  id="checkbox-all-search"
-                  type="checkbox"
-                  class="h-4 w-4 rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600 dark:focus:ring-offset-gray-800"
-                />
-                <label for="checkbox-all-search" class="sr-only"
-                  >checkbox</label
-                >
-              </div>
+            <th>
+              <label>
+                <input type="checkbox" class="checkbox" />
+              </label>
             </th>
-            <th scope="col" class="px-6 py-3">Name</th>
-            <th scope="col" class="px-6 py-3">Position</th>
-            <th scope="col" class="px-6 py-3">Status</th>
-            <th scope="col" class="px-6 py-3">Action</th>
+            <th>Tên</th>
+            <th>Vị trí</th>
+            <th>Hành động</th>
           </tr>
         </thead>
         <tbody>
-          <tr
-            v-for="(user, index) in users"
-            :key="index"
-            class="border-b bg-white hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-600"
-          >
-            <td class="w-4 p-4">
-              <div class="flex items-center">
-                <input
-                  id="checkbox-table-search-1"
-                  type="checkbox"
-                  class="h-4 w-4 rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600 dark:focus:ring-offset-gray-800"
-                />
-                <label for="checkbox-table-search-1" class="sr-only"
-                  >checkbox</label
-                >
-              </div>
-            </td>
-            <th
-              scope="row"
-              class="flex items-center whitespace-nowrap px-6 py-4 text-gray-900 dark:text-white"
-            >
-              <img
-                class="h-10 w-10 rounded-full"
-                src="https://flowbite.com/docs/images/people/profile-picture-5.jpg"
-                alt="Jese image"
-              />
-              <div class="pl-3">
-                <div class="text-base font-semibold">{{ user.name }}</div>
-                <div class="font-normal text-gray-500">
-                  {{ user.email }}
+          <!-- row 1 -->
+          <tr v-for="user in users">
+            <th>
+              <label>
+                <input type="checkbox" class="checkbox" />
+              </label>
+            </th>
+            <td>
+              <div class="flex items-center space-x-3">
+                <div class="avatar">
+                  <div class="mask mask-squircle h-12 w-12">
+                    <img
+                      :src="user.avatar"
+                      alt="Avatar Tailwind CSS Component"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <div class="font-bold">{{ user.name }}</div>
+                  <div class="text-sm opacity-50">{{ user.email }}</div>
                 </div>
               </div>
-            </th>
-            <td class="px-6 py-4">React Developer</td>
-            <td class="px-6 py-4">
-              <div class="flex items-center">
-                <div class="mr-2 h-2.5 w-2.5 rounded-full bg-green-500"></div>
-                Online
-              </div>
             </td>
-            <td class="px-6 py-4">
-              <a
-                href="#"
-                class="font-medium text-blue-600 hover:underline dark:text-blue-500"
-                >Edit user</a
+            <td>
+              Zemlak, Daniel and Leannon
+              <br />
+              <span class="badge badge-ghost badge-sm"
+                >Desktop Support Technician</span
               >
             </td>
+            <th>
+              <button class="btn btn-ghost btn-xs">details</button>
+            </th>
           </tr>
         </tbody>
       </table>
@@ -177,7 +155,7 @@
 </template>
 
 <script setup>
-import CreateUserModal from "./CreateUserModal.vue";
+import CreateUserModal from "~/components/admin/users/CreateUserModal.vue";
 
 definePageMeta({
   layout: "admin",
@@ -196,7 +174,7 @@ const toggleCreateModal = () => {
 
 const userCreated = (dataUsers) => {
   isCreateModalOpen.value = !isCreateModalOpen.value;
-  users.value = dataUsers.data;
+  users.value = dataUsers;
 };
 </script>
 

@@ -16,7 +16,6 @@
     "@nuxt/devtools": "latest",
     "@nuxt/image": "^1.0.0-rc.1",
     "@nuxtjs/tailwindcss": "^6.8.0",
-    "@tailvue/nuxt": "^1.0.0",
     "@types/node": "^18.17.3",
     "daisyui": "^3.7.3",
     "nuxt": "^3.6.5",
@@ -26,9 +25,10 @@
   },
   "dependencies": {
     "@pinia/nuxt": "^0.4.11",
+    "@vee-validate/nuxt": "^4.11.6",
+    "@vee-validate/yup": "^4.11.6",
     "class-variance-authority": "^0.7.0",
     "pinia": "^2.1.6",
-    "vee-validate": "^4.11.3",
     "yup": "^1.2.0"
   }
 }

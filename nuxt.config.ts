@@ -6,7 +6,7 @@ export default defineNuxtConfig({
     "@nuxt/image",
     "nuxt-icon",
     "@pinia/nuxt",
-    "@tailvue/nuxt",
+    "@vee-validate/nuxt",
   ],
   runtimeConfig: {
     public: {
