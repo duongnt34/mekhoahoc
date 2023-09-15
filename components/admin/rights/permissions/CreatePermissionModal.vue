@@ -43,9 +43,12 @@
 
 <script setup lang="ts">
 import {useYupSchemas} from "~/composables/useYupSchemas";
+import {useApiFetch} from "~/composables/useApiFetch";
+import {useToastStore} from "~/stores/useToastStore";
 
 const props = defineProps(["isOpen"]);
-const emit = defineEmits(["toggleCreateModal", "userCreated"]);
+const emit = defineEmits(["toggleCreateModal", "permissionCreated"]);
+const toast = useToastStore();
 const formError = ref("");
 
 
@@ -59,8 +62,19 @@ const toggleModal = () => {
 const schema = useYupSchemas().adminCreatePermission
 
 
-const onSubmit = () => {
+const onSubmit = async (values: Object) => {
+    const {data, error} = await useApiFetch<any>('/api/permissions', {
+        method: 'POST',
+        body: values
+    })
 
+    if (error.value) {
+        toast.error('Có lỗi khi tạo quyền');
+        return;
+    }
+
+    const permissions = data.value;
+    emit('permissionCreated', permissions);
 }
 </script>
 

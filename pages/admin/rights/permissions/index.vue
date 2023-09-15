@@ -69,7 +69,8 @@
                 </tbody>
             </table>
 
-            <CreatePermissionModal :isOpen="isCreateModalOpen" @toggle-create-modal="toggleCreateModal"/>
+            <CreatePermissionModal :isOpen="isCreateModalOpen" @toggle-create-modal="toggleCreateModal"
+                                   @permission-created="handlePermissionCreated"/>
         </div>
     </div>
 </template>
@@ -97,6 +98,11 @@ if (error.value) {
     }
 } else {
     permissions.value = data.value?.data
+}
+
+const handlePermissionCreated = (dataPermissions: any) => {
+    isCreateModalOpen.value = !isCreateModalOpen.value;
+    permissions.value = dataPermissions.data
 }
 </script>
 

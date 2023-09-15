@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <ClientOnly>
         <div v-if="permissionError">
             <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
                  role="alert">
@@ -62,21 +62,22 @@
                 <tr v-for="(role, index) in roles" :key="index">
                     <th>{{ index + 1 }}</th>
                     <td>{{ role.name }}</td>
-                    <th class="space-x-1">
-                        <button class="text-info btn btn-xs">
-                            <Icon size="16" name="heroicons:pencil-square-20-solid"></Icon>
+                    <th class="space-x-2">
+                        <button class="text-info" type="button">
+                            <Icon size="18" name="heroicons:pencil-square-20-solid"></Icon>
                         </button>
-                        <button class="text-danger btn btn-xs">
-                            <Icon size="16" name="heroicons:trash-20-solid"></Icon>
+                        <button class="text-danger " type="button">
+                            <Icon size="18" name="heroicons:trash-20-solid"></Icon>
                         </button>
                     </th>
                 </tr>
                 </tbody>
             </table>
 
-            <CreateRoleModal :isOpen="isCreateModalOpen" @toggle-create-modal="toggleCreateModal"/>
+            <CreateRoleModal :isOpen="isCreateModalOpen" @toggle-create-modal="toggleCreateModal"
+                             @role-created="handleRoleCreated"/>
         </div>
-    </div>
+    </ClientOnly>
 </template>
 
 <script setup lang="ts">
@@ -87,6 +88,12 @@ definePageMeta({
     middleware: ["logged-out"],
 });
 
+type Role = {
+    id: number
+    name: string;
+    permissions: string[] | null;
+}
+const roles = ref<Role | null>(null);
 const permissionError = ref<string | boolean>(false);
 
 const isCreateModalOpen = ref(false);
@@ -94,15 +101,22 @@ const toggleCreateModal = () => {
     isCreateModalOpen.value = !isCreateModalOpen.value;
 }
 
-const roles = ref(null);
-const {data, error} = await useApiFetch<any>('/api/roles')
-if (error.value) {
-    if (error.value.statusCode == 403) {
-        permissionError.value = "Bạn không có quyền truy cập mục này!"
+const fetchRoles = async () => {
+    const {data, error} = await useApiFetch<any>('/api/roles')
+    if (error.value) {
+        if (error.value.statusCode == 403) {
+            permissionError.value = "Bạn không có quyền truy cập mục này!"
+        }
+    } else {
+        roles.value = data.value?.data
     }
-} else {
-    roles.value = data.value?.data
 }
-</script>
 
-<style scoped></style>
+await fetchRoles()
+
+const handleRoleCreated = async (dataRoles: any) => {
+    isCreateModalOpen.value = !isCreateModalOpen.value;
+    await fetchRoles()
+}
+
+</script>

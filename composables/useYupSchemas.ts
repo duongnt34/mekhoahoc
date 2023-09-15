@@ -57,5 +57,6 @@ export const useYupSchemas = () => {
         name: yup.string().required('Vui lòng điền thông tin'),
         description: yup.string().required('Vui lòng điền thông tin')
     })
+
     return {register, adminCreateUser, adminCreateRole, adminCreatePermission};
 };
