@@ -83,7 +83,7 @@ const toggleModal = () => {
 
 watch(() => props.isOpen, async () => {
     if (props.isOpen == true) {
-        const {data, error} = await useApiFetch<any>('/api/get-permissions-options')
+        const {data} = await useApiFetch<any>('/api/get-permissions-options')
         permissions.value = data.value.data;
         treeData.value = data.value.data;
     }

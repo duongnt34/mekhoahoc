@@ -99,12 +99,31 @@
               >
                     </td>
                     <th class="space-x-1">
+                        <!--Edit-->
                         <button class="text-info btn btn-xs">
                             <Icon size="16" name="heroicons:pencil-square-20-solid"></Icon>
                         </button>
+
+                        <!--Delete-->
                         <button class="text-danger btn btn-xs">
                             <Icon size="16" name="heroicons:trash-20-solid"></Icon>
                         </button>
+
+                        <details class="dropdown">
+                            <summary class="btn m-1 btn-xs">
+                                <Icon size="16" name="heroicons:trash-20-solid"></Icon>
+                            </summary>
+                            <div
+                                class="dropdown-content z-[1] card card-compact w-64 p-2 shadow bg-base-300">
+                                <div class="card-body flex flex-col gap-10">
+                                    <p>Bạn chắc chắn muốn xóa?</p>
+                                    <div class="flex flex-row justify-between">
+                                        <button class="btn btn-xs btn-success">Đồng ý</button>
+                                        <button class="btn btn-xs btn-error">Hủy</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </details>
                     </th>
                 </tr>
                 </tbody>
@@ -114,7 +133,7 @@
             <CreateUserModal
                 :isOpen="isCreateModalOpen"
                 @toggle-create-modal="toggleCreateModal"
-                @user-created="userCreated"
+                @user-created="handleUserCreated"
             />
         </div>
     </div>
@@ -122,6 +141,7 @@
 
 <script setup lang="ts">
 import CreateUserModal from "~/components/admin/users/CreateUserModal.vue";
+import {useToastStore} from "~/stores/useToastStore";
 
 definePageMeta({
     layout: "admin",
@@ -129,6 +149,7 @@ definePageMeta({
 });
 
 type User = {
+    id: number;
     name: string;
     email: string;
     avatar: string;
@@ -138,24 +159,39 @@ type User = {
 const isCreateModalOpen = ref(false);
 const users = ref<User[]>([]);
 const permissionError = ref<string | boolean>(false);
-
-const {data, error} = await useApiFetch<any>("/api/users");
-if (error.value) {
-    if (error.value.statusCode == 403) {
-        permissionError.value = "Bạn không có quyền truy cập mục này!"
-    }
-} else {
-    users.value = data.value.data as User[];
-}
+const toast = useToastStore();
 
 const toggleCreateModal = () => {
     isCreateModalOpen.value = !isCreateModalOpen.value;
 };
 
-const userCreated = (dataUsers: any) => {
+const fetchUsers = async () => {
+    const {data, error} = await useApiFetch<any>("/api/users");
+    if (error.value) {
+        if (error.value.statusCode == 403) {
+            permissionError.value = "Bạn không có quyền truy cập mục này!"
+        }
+    } else {
+        users.value = data.value.data as User[];
+    }
+}
+await fetchUsers();
+const handleUserCreated = async () => {
     isCreateModalOpen.value = !isCreateModalOpen.value;
-    users.value = dataUsers.data;
+    await fetchUsers();
 };
+
+const deleteUser = async (user: User) => {
+    const {data, error} = await useApiFetch<any>(`/api/users/${user.id}`, {
+        method: 'DELETE'
+    })
+    if (error.value) {
+        toast.error(error.value.data.message);
+    } else {
+        toast.success(data.value.message);
+        await fetchUsers()
+    }
+}
 </script>
 
 <style scoped></style>

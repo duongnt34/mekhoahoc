@@ -114,7 +114,7 @@ const fetchRoles = async () => {
 
 await fetchRoles()
 
-const handleRoleCreated = async (dataRoles: any) => {
+const handleRoleCreated = async () => {
     isCreateModalOpen.value = !isCreateModalOpen.value;
     await fetchRoles()
 }

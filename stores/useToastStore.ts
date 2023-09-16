@@ -1,10 +1,12 @@
-import { defineStore } from 'pinia'
+import {defineStore} from 'pinia'
+import {InjectionKey} from "@vue/runtime-core";
+
 export const useToastStore = defineStore('toast', () => {
 
     type Toast = {
         message: string;
         intent: ToastIntent;
-        key: any;
+        key: InjectionKey<string>;
         duration: number | null;
     }
 
@@ -12,27 +14,27 @@ export const useToastStore = defineStore('toast', () => {
 
     const items = ref<Toast[]>([]);
 
-    const add = (message: string, intent: ToastIntent, duration: number|null) => {
-        items.value.unshift({ message: message, intent: intent, key: Symbol(), duration })
+    const add = (message: string, intent: ToastIntent, duration: number | null) => {
+        items.value.unshift({message: message, intent: intent, key: Symbol() as InjectionKey<string>, duration})
     }
 
     const remove = (index: number) => {
         items.value.splice(index, 1)
     }
 
-    const success = (message: string, duration?: number|null) => {
-        add(message, 'success', duration as number|null)
+    const success = (message: string, duration?: number | null) => {
+        add(message, 'success', duration as number | null)
     }
 
-    const error = (message: string, duration?: number|null) => {
+    const error = (message: string, duration?: number | null) => {
         add(message, 'error', duration as number)
     }
 
-    const warning = (message: string, duration?: number|null) => {
+    const warning = (message: string, duration?: number | null) => {
         add(message, 'warning', duration as number)
     }
 
-    const info = (message: string, duration?: number|null) => {
+    const info = (message: string, duration?: number | null) => {
         add(message, 'info', duration as number)
     }
 
