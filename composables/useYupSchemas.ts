@@ -49,6 +49,10 @@ export const useYupSchemas = () => {
         avatar: yup.string(),
     });
 
+    const editCreateUser = adminCreateUser.shape({
+        password: yup.string(),
+    })
+
     const adminCreateRole = yup.object({
         name: yup.string().required('Vui lòng điền thông tin'),
     })
@@ -58,5 +62,5 @@ export const useYupSchemas = () => {
         description: yup.string().required('Vui lòng điền thông tin')
     })
 
-    return {register, adminCreateUser, adminCreateRole, adminCreatePermission};
+    return {register, adminCreateUser, editCreateUser, adminCreateRole, adminCreatePermission};
 };

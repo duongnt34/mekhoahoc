@@ -1,12 +1,7 @@
 <template>
     <ClientOnly>
-        <div v-if="permissionError">
-            <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
-                 role="alert">
-                {{ permissionError }}
-            </div>
-        </div>
-        <div v-else class="relative overflow-x-auto sm:rounded-lg">
+        <PermissionError :permission-error="permissionError"></PermissionError>
+        <div v-if="!permissionError" class="relative overflow-x-auto sm:rounded-lg">
             <div
                 class="flex items-center justify-between bg-white pb-4 dark:bg-gray-900"
             >
@@ -62,26 +57,47 @@
                 <tr v-for="(role, index) in roles" :key="index">
                     <th>{{ index + 1 }}</th>
                     <td>{{ role.name }}</td>
-                    <th class="space-x-2">
-                        <button class="text-info" type="button">
-                            <Icon size="18" name="heroicons:pencil-square-20-solid"></Icon>
-                        </button>
-                        <button class="text-danger " type="button">
-                            <Icon size="18" name="heroicons:trash-20-solid"></Icon>
-                        </button>
+                    <th class="space-x-3">
+                        <!--Edit-->
+                        <div class="tooltip" data-tip="Sửa">
+                            <button class="text-info hover:scale-125 transition" @click="openEditModal(role)">
+                                <Icon size="22" name="heroicons:pencil-square-20-solid"></Icon>
+                            </button>
+                        </div>
+
+                        <!--Delete-->
+                        <div class="tooltip" data-tip="Xóa">
+                            <button class="text-danger hover:scale-125 transition" @click="deleteRole(role)">
+                                <Icon size="22" name="heroicons:trash-20-solid"></Icon>
+                            </button>
+                        </div>
                     </th>
                 </tr>
                 </tbody>
             </table>
 
             <CreateRoleModal :isOpen="isCreateModalOpen" @toggle-create-modal="toggleCreateModal"
+                             :permissions="permissions"
                              @role-created="handleRoleCreated"/>
+
+            <EditRoleModal :isOpen="isEditModalOpen" :role="editingRole" :permissions="permissions"
+                           @toggle-edit-modal="toggleEditModal" @role-updated="toggleEditModal"></EditRoleModal>
+            <ConfirmDialog ref="deleteDialog">
+                <template #modal-content>
+                    Bạn có chắc muốn xoá vai trò này?
+                </template>
+            </ConfirmDialog>
         </div>
     </ClientOnly>
 </template>
 
 <script setup lang="ts">
 import CreateRoleModal from "~/components/admin/rights/roles/CreateRoleModal.vue";
+import PermissionError from "~/components/utils/PermissionError.vue";
+import EditRoleModal from "~/components/admin/rights/roles/EditRoleModal.vue";
+import ConfirmDialog from "~/components/utils/confirm-dialog/ConfirmDialog.vue";
+import {useToastStore} from "~/stores/useToastStore";
+import {useApiFetch} from "~/composables/useApiFetch";
 
 definePageMeta({
     layout: "admin",
@@ -93,12 +109,18 @@ type Role = {
     name: string;
     permissions: string[] | null;
 }
+const toast = useToastStore();
 const roles = ref<Role | null>(null);
 const permissionError = ref<string | boolean>(false);
-
-const isCreateModalOpen = ref(false);
+const permissions = ref<any>(null);
+const isCreateModalOpen = ref<boolean>(false);
+const isEditModalOpen = ref<boolean>(false);
 const toggleCreateModal = () => {
     isCreateModalOpen.value = !isCreateModalOpen.value;
+}
+
+const toggleEditModal = () => {
+    isEditModalOpen.value = !isEditModalOpen.value;
 }
 
 const fetchRoles = async () => {
@@ -112,11 +134,40 @@ const fetchRoles = async () => {
     }
 }
 
+const fetchPermissionOptions = async () => {
+    const {data} = await useApiFetch<any>('/api/get-permission-options')
+    permissions.value = data.value.data;
+}
+
 await fetchRoles()
+await fetchPermissionOptions()
 
 const handleRoleCreated = async () => {
     isCreateModalOpen.value = !isCreateModalOpen.value;
     await fetchRoles()
+}
+
+const deleteDialog = ref<InstanceType<typeof ConfirmDialog> | null>(null);
+const deleteRole = async (role: Role) => {
+    const {isCanceled} = await deleteDialog.value?.reveal()
+    if (isCanceled === true) {
+        return;
+    }
+    const {data, error} = await useApiFetch<any>(`/api/roles/${role.id}`, {
+        method: 'DELETE'
+    })
+    if (error.value) {
+        toast.error(error.value.data.message);
+    } else {
+        toast.success(data.value.message);
+        await fetchRoles()
+    }
+}
+
+const editingRole = ref<Role | null>(null);
+const openEditModal = (role: Role) => {
+    isEditModalOpen.value = !isEditModalOpen.value;
+    editingRole.value = role
 }
 
 </script>

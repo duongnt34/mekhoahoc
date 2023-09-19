@@ -1,11 +1,6 @@
 <template>
     <div class="">
-        <div v-if="permissionError">
-            <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
-                 role="alert">
-                {{ permissionError }}
-            </div>
-        </div>
+        <PermissionError :permission-error="permissionError"></PermissionError>
         <div v-if="!permissionError" class="relative overflow-x-auto sm:rounded-lg">
             <!--            Action Bar-->
             <div
@@ -25,27 +20,15 @@
                     <div
                         class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
                     >
-                        <svg
-                            class="h-4 w-4 text-gray-500 dark:text-gray-400"
-                            aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 20 20"
-                        >
-                            <path
-                                stroke="currentColor"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-                            />
-                        </svg>
+                        <Icon size="16" name="heroicons:magnifying-glass-20-solid"></Icon>
                     </div>
                     <input
                         type="text"
                         id="table-search-users"
                         class="text-gray-90 block w-80 rounded-lg border border-gray-300 bg-gray-50 p-2 pl-10 text-sm outline-none focus:outline-none focus:ring-0 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
                         placeholder="Search for users"
+                        @input="searchUser"
+                        v-model="searchQuery"
                     />
                 </div>
             </div>
@@ -98,32 +81,20 @@
               >{{ role }}</span
               >
                     </td>
-                    <th class="space-x-1">
+                    <th class="space-x-3">
                         <!--Edit-->
-                        <button class="text-info btn btn-xs">
-                            <Icon size="16" name="heroicons:pencil-square-20-solid"></Icon>
-                        </button>
+                        <div class="tooltip" data-tip="Sửa">
+                            <button class="text-info hover:scale-125 transition" @click="openEditModal(user)">
+                                <Icon size="22" name="heroicons:pencil-square-20-solid"></Icon>
+                            </button>
+                        </div>
 
                         <!--Delete-->
-                        <button class="text-danger btn btn-xs">
-                            <Icon size="16" name="heroicons:trash-20-solid"></Icon>
-                        </button>
-
-                        <details class="dropdown">
-                            <summary class="btn m-1 btn-xs">
-                                <Icon size="16" name="heroicons:trash-20-solid"></Icon>
-                            </summary>
-                            <div
-                                class="dropdown-content z-[1] card card-compact w-64 p-2 shadow bg-base-300">
-                                <div class="card-body flex flex-col gap-10">
-                                    <p>Bạn chắc chắn muốn xóa?</p>
-                                    <div class="flex flex-row justify-between">
-                                        <button class="btn btn-xs btn-success">Đồng ý</button>
-                                        <button class="btn btn-xs btn-error">Hủy</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </details>
+                        <div class="tooltip" data-tip="Xóa">
+                            <button class="text-danger hover:scale-125 transition" @click="deleteUser(user)">
+                                <Icon size="22" name="heroicons:trash-20-solid"></Icon>
+                            </button>
+                        </div>
                     </th>
                 </tr>
                 </tbody>
@@ -134,7 +105,18 @@
                 :isOpen="isCreateModalOpen"
                 @toggle-create-modal="toggleCreateModal"
                 @user-created="handleUserCreated"
+                :roles="roles"
             />
+
+            <EditUserModal :isOpen="isEditModalOpen" @toggle-edit-modal="toggleEditModal" :user="editingUser"
+                           :roles="roles"
+                           @user-edited="handleUserEdited"/>
+
+            <ConfirmDialog ref="deleteDialog">
+                <template #modal-content>
+                    Bạn có chắc muốn xoá người dùng này?
+                </template>
+            </ConfirmDialog>
         </div>
     </div>
 </template>
@@ -142,6 +124,10 @@
 <script setup lang="ts">
 import CreateUserModal from "~/components/admin/users/CreateUserModal.vue";
 import {useToastStore} from "~/stores/useToastStore";
+import EditUserModal from "~/components/admin/users/EditUserModal.vue";
+import PermissionError from "~/components/utils/PermissionError.vue";
+import ConfirmDialog from "~/components/utils/confirm-dialog/ConfirmDialog.vue";
+import {bool} from "yup";
 
 definePageMeta({
     layout: "admin",
@@ -156,14 +142,26 @@ type User = {
     roles: string[];
 };
 
-const isCreateModalOpen = ref(false);
+const isCreateModalOpen = ref<boolean>(false);
+const isEditModalOpen = ref<boolean>(false);
 const users = ref<User[]>([]);
+const roles = ref<string[]>([]);
 const permissionError = ref<string | boolean>(false);
 const toast = useToastStore();
 
 const toggleCreateModal = () => {
     isCreateModalOpen.value = !isCreateModalOpen.value;
 };
+
+const toggleEditModal = () => {
+    isEditModalOpen.value = !isEditModalOpen.value;
+};
+
+const editingUser = ref<User | null>(null);
+const openEditModal = (user: User) => {
+    isEditModalOpen.value = true;
+    editingUser.value = user
+}
 
 const fetchUsers = async () => {
     const {data, error} = await useApiFetch<any>("/api/users");
@@ -175,13 +173,29 @@ const fetchUsers = async () => {
         users.value = data.value.data as User[];
     }
 }
+const fetchRoleOptions = async () => {
+    const {data} = await useApiFetch<any>('/api/get-role-options')
+    // roles.value = data.value.roles
+    roles.value = data.value.roles
+}
 await fetchUsers();
+await fetchRoleOptions();
 const handleUserCreated = async () => {
     isCreateModalOpen.value = !isCreateModalOpen.value;
     await fetchUsers();
 };
 
+const handleUserEdited = async () => {
+    isEditModalOpen.value = !isEditModalOpen.value;
+    await fetchUsers();
+}
+
+const deleteDialog = ref<InstanceType<typeof ConfirmDialog> | null>(null);
 const deleteUser = async (user: User) => {
+    const {isCanceled} = await deleteDialog.value?.reveal()
+    if (isCanceled === true) {
+        return;
+    }
     const {data, error} = await useApiFetch<any>(`/api/users/${user.id}`, {
         method: 'DELETE'
     })
@@ -192,6 +206,18 @@ const deleteUser = async (user: User) => {
         await fetchUsers()
     }
 }
-</script>
 
-<style scoped></style>
+const searchQuery = ref<string>('');
+const queryTimeout = ref<any>(null);
+const searchUser = async () => {
+    clearTimeout(queryTimeout.value)
+    queryTimeout.value = setTimeout(async () => {
+        const {data, error} = await useApiFetch<any>(`/api/users?name=${searchQuery.value}`);
+        if (error.value) {
+            return
+        }
+        users.value = data.value.data;
+        return;
+    }, 500)
+}
+</script>

@@ -8,13 +8,13 @@
                 ✕
             </button>
             <div class="border-b pb-2">
-                <label class="font-semibold uppercase" for="create-user-form"
-                >Tạo vai trò</label
-                >
+                <label class="font-semibold uppercase" for="create-user-form">
+                    Sửa vai trò
+                </label>
             </div>
 
-            <!-- Create Form -->
-            <Form :validation-schema="schema" @submit="onSubmit">
+            <!-- Edit Form -->
+            <Form ref="editForm" :validation-schema="schema" v-slot="{setValues}" @submit="onSubmit">
                 <div v-if="formError"
                      class="p-4 mt-2 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
                      role="alert">
@@ -62,22 +62,25 @@ import {useApiFetch} from "~/composables/useApiFetch";
 import type {TreeSelectProps} from 'ant-design-vue';
 import {TreeSelect} from 'ant-design-vue';
 import {useToastStore} from "~/stores/useToastStore";
+import {Form} from "vee-validate";
 
 const SHOW_SCHEME = TreeSelect.SHOW_CHILD;
 
-const props = defineProps(["isOpen", "permissions"]);
-const emit = defineEmits(["toggleCreateModal", "roleCreated"]);
+const props = defineProps(["isOpen", "role", "permissions"]);
+const emit = defineEmits(["toggleEditModal", "roleUpdated"]);
 const toast = useToastStore();
-const formError = ref("");
+const formError = ref<string>("");
 const schema = useYupSchemas().adminCreateRole;
 const selectedPermissions = ref<string[]>([]);
 const selectPermissionError = ref<string>('');
 const treeData = ref<TreeSelectProps['treeData']>();
+
 treeData.value = props.permissions;
+
 
 const isModalOpen = computed(() => props.isOpen);
 const toggleModal = () => {
-    emit("toggleCreateModal");
+    emit("toggleEditModal");
 };
 
 const onSubmit = async (values: any) => {
@@ -86,8 +89,11 @@ const onSubmit = async (values: any) => {
         return;
     }
 
-    const {error} = await useApiFetch<any>('/api/roles', {
+    const {error} = await useApiFetch<any>('/api/roles/' + props.role.id, {
         method: 'POST',
+        params: {
+            _method: 'PUT'
+        },
         body: {
             ...values,
             permissions: selectedPermissions.value
@@ -100,8 +106,19 @@ const onSubmit = async (values: any) => {
         return;
     }
 
-    toast.success('Tạo vai trò thành công!')
-    emit('roleCreated');
+    toast.success('Sửa vai trò thành công!')
+    emit('roleUpdated');
 }
+
+const editForm = ref<InstanceType<typeof Form> | null>(null);
+watch(
+    () => props.role,
+    async () => {
+        editForm.value?.setValues({
+            name: props.role.name,
+        })
+        selectedPermissions.value = props.role.permissions;
+    }
+);
 
 </script>

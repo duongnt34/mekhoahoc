@@ -7,7 +7,8 @@ export default defineNuxtConfig({
         "nuxt-icon",
         "@pinia/nuxt",
         "@vee-validate/nuxt",
-        '@ant-design-vue/nuxt'
+        '@ant-design-vue/nuxt',
+        '@vueuse/nuxt',
     ],
     runtimeConfig: {
         public: {

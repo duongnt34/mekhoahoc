@@ -1,20 +1,20 @@
 <template>
-    <dialog class="modal" :class="{ 'modal-open': isCreateModalOpen }">
+    <dialog class="modal" :class="{ 'modal-open': isModalOpen }">
         <div class="modal-box w-11/12 max-w-5xl">
             <button
                 class="btn btn-circle btn-ghost btn-sm absolute right-2 top-2"
-                @click="toggleCreateModal"
+                @click="toggleModal"
             >
                 ✕
             </button>
             <div class="border-b pb-2">
                 <label class="font-semibold uppercase" for="create-user-form"
-                >Tạo tài khoản</label
+                >Sửa tài khoản</label
                 >
             </div>
 
             <!-- Create Form -->
-            <Form :validation-schema="schema" @submit="onSubmit">
+            <Form ref="editForm" :validation-schema="schema" v-slot="{setValues}" @submit="onSubmit">
                 <div class="grid grid-cols-2 gap-x-5">
                     <div
                         v-if="formError"
@@ -35,9 +35,9 @@
                             class="input input-bordered w-full"
                         />
                         <label class="label">
-              <span class="label-text-alt text-danger">
-                <ErrorMessage name="name"/>
-              </span>
+                              <span class="label-text-alt text-danger">
+                                <ErrorMessage name="name"/>
+                              </span>
                         </label>
                     </div>
 
@@ -124,47 +124,56 @@
 <script setup lang="ts">
 import {useYupSchemas} from "~/composables/useYupSchemas";
 import {useToastStore} from "~/stores/useToastStore";
+import {Form} from "vee-validate";
 
-const props = defineProps(["isOpen"]);
-const emit = defineEmits(["toggleCreateModal", "userCreated"]);
+const props = defineProps(["isOpen", "user"]);
+const emit = defineEmits(["toggleEditModal", "userEdited"]);
 const toast = useToastStore();
-const formError = ref("");
+const formError = ref<string>("");
 const avatar = ref("");
-const avatarError = ref("");
+const avatarError = ref<string>("");
 const avatarPreview = ref<any>(null);
-
-const isCreateModalOpen = computed(() => {
-    return props.isOpen;
-});
-const toggleCreateModal = () => {
-    emit("toggleCreateModal");
+const editForm = ref<InstanceType<typeof Form> | null>(null);
+watch(
+    () => props.user,
+    () => {
+        formError.value = "";
+        editForm.value?.setValues({
+            name: props.user.name,
+            email: props.user.email,
+            password: ''
+        })
+        avatarPreview.value = props.user.avatar;
+    }
+);
+const isModalOpen = computed(() => props.isOpen);
+const toggleModal = () => {
+    emit('toggleEditModal')
 };
 
-const schema = useYupSchemas().adminCreateUser;
+const schema = useYupSchemas().editCreateUser
 
 const onSubmit = async (values: any) => {
-    if (!avatar.value) {
-        avatarError.value = "Vui lòng chọn file";
-        return;
-    }
-
     let formData = new FormData();
     formData.append("name", values.name);
     formData.append("email", values.email);
     formData.append("password", values.password);
     formData.append("avatar", avatar.value);
 
-    const {data, error} = await useApiFetch<any>("/api/users", {
+    const {data, error} = await useApiFetch<any>(`/api/users/${props.user?.id}`, {
         method: "POST",
+        params: {
+            _method: "PUT"
+        },
         body: formData,
     });
     if (error.value?.data.message) {
         formError.value = error.value?.data.message;
-        toast.error('Có lỗi khi tạo tài khoản!')
+        toast.error('Có lỗi khi sửa tài khoản!')
         return;
     } else {
         toast.success(data.value.message)
-        emit('userCreated');
+        emit('userEdited');
     }
 };
 

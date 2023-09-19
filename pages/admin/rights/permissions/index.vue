@@ -1,11 +1,6 @@
 <template>
     <div>
-        <div v-if="permissionError">
-            <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
-                 role="alert">
-                {{ permissionError }}
-            </div>
-        </div>
+        <PermissionError :permission-error="permissionError"></PermissionError>
         <div v-if="!permissionError" class="relative overflow-x-auto sm:rounded-lg">
             <div
                 class="flex items-center justify-between bg-white pb-4 dark:bg-gray-900"
@@ -77,6 +72,7 @@
 
 <script setup lang="ts">
 import CreatePermissionModal from "~/components/admin/rights/permissions/CreatePermissionModal.vue";
+import PermissionError from "~/components/utils/PermissionError.vue";
 
 definePageMeta({
     layout: "admin",

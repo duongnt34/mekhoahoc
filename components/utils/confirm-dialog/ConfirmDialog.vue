@@ -1,22 +1,28 @@
 <template>
-    <details class="dropdown dropdown-end">
-        <summary>
-            <div class="btn m-1 btn-xs">
-                <Icon size="16" name="heroicons:trash-20-solid"></Icon>
-            </div>
-        </summary>
-        <div
-            class="dropdown-content z-[1] card card-compact w-64 p-2 shadow bg-base-300">
-            <div class="card-body flex flex-col gap-10">
-                <p>Bạn chắc chắn muốn xóa?</p>
-                <div class="flex flex-row justify-between">
-                    <button class="btn btn-xs btn-success">Đồng ý</button>
-                    <button class="btn btn-xs btn-error" @click="">Hủy</button>
+    <!--    <teleport to="body">-->
+    <dialog class="modal" :class="{'modal-open' : isRevealed}">
+        <div class="modal-box">
+            <div class="flex flex-col gap-10">
+                <slot name="modal-content"></slot>
+                <div class="flex flex-row justify-end gap-3">
+                    <button class="btn btn-sm btn-success" @click="confirm">Đồng ý</button>
+                    <button class="btn btn-sm btn-error" @click="cancel">Hủy</button>
                 </div>
             </div>
         </div>
-    </details>
+    </dialog>
+    <!--    </teleport>-->
 </template>
 
 <script setup lang="ts">
+const {
+    isRevealed,
+    reveal,
+    confirm,
+    cancel,
+} = useConfirmDialog()
+
+defineExpose({
+    reveal,
+})
 </script>

@@ -111,10 +111,24 @@
               </span>
                         </label>
                     </div>
+
+                    <div class="form-control w-full">
+                        <label class="label">
+                            <span class="label-text font-semibold">Vai trò:</span>
+                        </label>
+                        <!--Input here-->
+                        <label class="label">
+              <span class="label-text-alt text-danger">
+                {{ avatarError }}
+              </span>
+                        </label>
+                    </div>
                 </div>
 
                 <div class="border-t pt-3">
-                    <button type="submit" class="btn btn-neutral btn-sm text-xs">Xác nhận</button>
+                    <button type="submit" class="btn btn-neutral btn-sm text-xs">
+                        Xác nhận
+                    </button>
                 </div>
             </Form>
         </div>
@@ -132,6 +146,7 @@ const formError = ref("");
 const avatar = ref("");
 const avatarError = ref("");
 const avatarPreview = ref<any>(null);
+const selectedRoles = ref<string[]>([]);
 
 const isCreateModalOpen = computed(() => {
     return props.isOpen;
@@ -160,12 +175,12 @@ const onSubmit = async (values: any) => {
     });
     if (error.value?.data.message) {
         formError.value = error.value?.data.message;
-        toast.error('Có lỗi khi tạo tài khoản!')
+        toast.error("Có lỗi khi tạo tài khoản!");
         return;
-    } else {
-        toast.success(data.value.message)
-        emit('userCreated');
     }
+
+    toast.success(data.value.message);
+    emit("userCreated");
 };
 
 const handleAvatarChange = (e: any) => {
