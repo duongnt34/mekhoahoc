@@ -77,7 +77,7 @@
                   v-if="user.roles"
                   v-for="(role, index) in user.roles"
                   :key="index"
-                  class="badge badge-ghost"
+                  class="badge badge-neutral p-3 rounded-lg"
               >{{ role }}</span
               >
                     </td>
@@ -175,7 +175,6 @@ const fetchUsers = async () => {
 }
 const fetchRoleOptions = async () => {
     const {data} = await useApiFetch<any>('/api/get-role-options')
-    // roles.value = data.value.roles
     roles.value = data.value.roles
 }
 await fetchUsers();

@@ -116,10 +116,26 @@
                         <label class="label">
                             <span class="label-text font-semibold">Vai trò:</span>
                         </label>
-                        <!--Input here-->
+                        <ClientOnly>
+                            <div class="create-user-select-roles">
+                                <el-select
+                                    v-model="selectedRoles"
+                                    multiple
+                                    placeholder="Select"
+                                    style="width: 100%"
+                                >
+                                    <el-option
+                                        v-for="item in data"
+                                        :key="item.value"
+                                        :label="item.label"
+                                        :value="item.value"
+                                    />
+                                </el-select>
+                            </div>
+                        </ClientOnly>
                         <label class="label">
               <span class="label-text-alt text-danger">
-                {{ avatarError }}
+                {{ roleError }}
               </span>
                         </label>
                     </div>
@@ -139,14 +155,17 @@
 import {useYupSchemas} from "~/composables/useYupSchemas";
 import {useToastStore} from "~/stores/useToastStore";
 
-const props = defineProps(["isOpen"]);
+const props = defineProps(["isOpen", "roles"]);
 const emit = defineEmits(["toggleCreateModal", "userCreated"]);
 const toast = useToastStore();
 const formError = ref("");
 const avatar = ref("");
 const avatarError = ref("");
+const roleError = ref("");
 const avatarPreview = ref<any>(null);
 const selectedRoles = ref<string[]>([]);
+const data = ref();
+data.value = props.roles
 
 const isCreateModalOpen = computed(() => {
     return props.isOpen;
@@ -163,11 +182,19 @@ const onSubmit = async (values: any) => {
         return;
     }
 
+    if (selectedRoles.value.length < 1) {
+        roleError.value = "Vui lòng chọn vai trò";
+        return;
+    }
+
     let formData = new FormData();
     formData.append("name", values.name);
     formData.append("email", values.email);
     formData.append("password", values.password);
     formData.append("avatar", avatar.value);
+    selectedRoles.value.forEach((role) => {
+        formData.append("roles[]", role);
+    });
 
     const {data, error} = await useApiFetch<any>("/api/users", {
         method: "POST",
@@ -184,7 +211,7 @@ const onSubmit = async (values: any) => {
 };
 
 const handleAvatarChange = (e: any) => {
-    avatar.value = e.target.files[0];
+    avatar.value = e.target.fiules[0];
     const file = e.target.files[0];
     const maxSize = 2 * 1024 * 1024; //2MB
 
@@ -213,3 +240,20 @@ const handleAvatarChange = (e: any) => {
     reader.readAsDataURL(file);
 };
 </script>
+<style lang="scss" scoped>
+//.create-user-select-roles {
+//    .el-input__wrapper {
+//        min-height: 3rem;
+//        border-radius: 0.5rem;
+//        outline-color: blue;
+//    }
+//
+//    .el-tag--info {
+//        font-size: 14px;
+//        color: #ffffff;
+//        background: #2B3440;
+//        padding: 1rem;
+//        border-radius: 0.5rem;
+//    }
+//}
+</style>

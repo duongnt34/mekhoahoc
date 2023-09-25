@@ -76,11 +76,13 @@
                 </tbody>
             </table>
 
-            <CreateRoleModal :isOpen="isCreateModalOpen" @toggle-create-modal="toggleCreateModal"
+            <CreateRoleModal v-if="isCreateModalOpen" :isOpen="isCreateModalOpen"
+                             @toggle-create-modal="toggleCreateModal"
                              :permissions="permissions"
                              @role-created="handleRoleCreated"/>
 
-            <EditRoleModal :isOpen="isEditModalOpen" :role="editingRole" :permissions="permissions"
+            <EditRoleModal v-if="isEditModalOpen" :isOpen="isEditModalOpen" :role="editingRole"
+                           :permissions="permissions"
                            @toggle-edit-modal="toggleEditModal" @role-updated="toggleEditModal"></EditRoleModal>
             <ConfirmDialog ref="deleteDialog">
                 <template #modal-content>

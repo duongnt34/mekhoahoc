@@ -5,7 +5,7 @@
             <nav class="h-12 w-full shadow-sm flex items-center justify-end gap-5 px-4">
                 <span>{{ user.name }}</span>
                 <ul v-if="user.roles" class="flex gap-x-3">
-                    <li v-for="(role, index) in user.roles" class="badge badge-neutral">{{ role }}</li>
+                    <li v-for="(role, index) in user.roles" class="badge badge-neutral p-3 rounded-lg">{{ role }}</li>
                 </ul>
                 <div class="avatar">
                     <div class="w-10 rounded-full">

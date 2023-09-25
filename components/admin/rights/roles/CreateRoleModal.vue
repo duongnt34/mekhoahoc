@@ -33,17 +33,15 @@
                     <label class="label">
                         <span class="label-text font-semibold">Danh sách quyền:</span>
                     </label>
-                    <a-tree-select
-                        v-model:value="selectedPermissions"
-                        style="width: 100%"
-                        :tree-data="treeData"
-                        tree-checkable
-                        allow-clear
-                        :show-checked-strategy="SHOW_SCHEME"
-                        placeholder="Please select"
-                        tree-node-filter-prop="label"
-
-                    />
+                    <client-only>
+                        <el-tree-select
+                            v-model="selectedPermissions"
+                            :data="data"
+                            multiple
+                            :render-after-expand="true"
+                            show-checkbox
+                        />
+                    </client-only>
                     <label class="label">
                         <span class="label-text-alt text-danger">{{ selectPermissionError }}</span>
                     </label>
@@ -59,11 +57,8 @@
 <script setup lang="ts">
 import {useYupSchemas} from "~/composables/useYupSchemas";
 import {useApiFetch} from "~/composables/useApiFetch";
-import type {TreeSelectProps} from 'ant-design-vue';
-import {TreeSelect} from 'ant-design-vue';
 import {useToastStore} from "~/stores/useToastStore";
 
-const SHOW_SCHEME = TreeSelect.SHOW_CHILD;
 
 const props = defineProps(["isOpen", "permissions"]);
 const emit = defineEmits(["toggleCreateModal", "roleCreated"]);
@@ -72,8 +67,8 @@ const formError = ref("");
 const schema = useYupSchemas().adminCreateRole;
 const selectedPermissions = ref<string[]>([]);
 const selectPermissionError = ref<string>('');
-const treeData = ref<TreeSelectProps['treeData']>();
-treeData.value = props.permissions;
+const data = ref();
+data.value = props.permissions
 
 const isModalOpen = computed(() => props.isOpen);
 const toggleModal = () => {
@@ -105,3 +100,9 @@ const onSubmit = async (values: any) => {
 }
 
 </script>
+
+<style>
+.el-input__wrapper {
+    min-height: 3rem !important;
+}
+</style>
