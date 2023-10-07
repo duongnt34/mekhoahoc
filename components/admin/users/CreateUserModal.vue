@@ -158,10 +158,10 @@ import {useToastStore} from "~/stores/useToastStore";
 const props = defineProps(["isOpen", "roles"]);
 const emit = defineEmits(["toggleCreateModal", "userCreated"]);
 const toast = useToastStore();
-const formError = ref("");
-const avatar = ref("");
-const avatarError = ref("");
-const roleError = ref("");
+const formError = ref<string>("");
+const avatar = ref<string>("");
+const avatarError = ref<string>("");
+const roleError = ref<string>("");
 const avatarPreview = ref<any>(null);
 const selectedRoles = ref<string[]>([]);
 const data = ref();
@@ -211,7 +211,7 @@ const onSubmit = async (values: any) => {
 };
 
 const handleAvatarChange = (e: any) => {
-    avatar.value = e.target.fiules[0];
+    avatar.value = e.target.files[0];
     const file = e.target.files[0];
     const maxSize = 2 * 1024 * 1024; //2MB
 
